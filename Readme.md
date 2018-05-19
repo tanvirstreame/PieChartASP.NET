@@ -1,4 +1,4 @@
-Insert data.csv file in the project
+Insert data.csv file in the project to get pie chart
 
 Screenshot-
 
