@@ -109,14 +109,28 @@ namespace PieChart
                     
                     PhoneNumber[i]=Convert.ToInt32(str[0]) ;
                 }
+                int[] Duration = new int[line.Length];
+                // int count = 0;
+
+                for (int i = 0; i < line.Length; i++)
+                {
+
+
+                    String[] str = line[i].Split(',');
+
+
+
+                    Duration[i] = Convert.ToInt32(str[3]);
+                }
+
+
 
                 //foreach (String str in line[0].Split(','))
                 //{
                 //    count++;
                 //    Response.Write(str);
                 //}
-             
-                int[] pointsArray = { 1, 2 ,1};
+
 
                 // Set palette.
                 this.ChartPhone.Palette = ChartColorPalette.SeaGreen;
@@ -127,8 +141,9 @@ namespace PieChart
 
 
                 //added
-                int[] array = { 12, 12, 12, 23, 45,8,9,10 };
+                
                 var dict = new Dictionary<int, int>();
+                var dictDuration = new Dictionary<int, int>();
 
                 foreach (var value in PhoneNumber)
                 {
@@ -137,6 +152,15 @@ namespace PieChart
                     else
                         dict[value] = 1;
                 }
+                foreach (var value in Duration)
+                {
+                    if (dictDuration.ContainsKey(value))
+                        dictDuration[value]++;
+                    else
+                        dictDuration[value] = 1;
+                }
+
+
                 List<string> Name = new List<string>();
                 List<int> values = new List<int>();
                 foreach (var pair in dict)
@@ -149,7 +173,24 @@ namespace PieChart
                   //  series.Points.Add(pair.Value);
                 }
 
-              DrawPieChart(values,Name,"Phone","Phone Record");
+
+
+                List<string> DurationName = new List<string>();
+                List<int> Durationvalues = new List<int>();
+                foreach (var pair in dictDuration)
+                {
+                    // Add series.
+                    DurationName.Add((pair.Key).ToString());
+                    //   Series series = this.Chart1.Series.Add((pair.Key).ToString());
+                    Durationvalues.Add(pair.Value);
+                    // Add point.
+                    //  series.Points.Add(pair.Value);
+                }
+
+
+                DrawPieChart(values,Name,"Phone","Phone Record");
+                DurationPieChart(Durationvalues, DurationName, "Duration", "Duration");
+
 
                 //added
 
@@ -170,10 +211,43 @@ namespace PieChart
             }
             else
             {
-                Response.Write("<p>Pleas insert file</p>");
+
             }
         }
+        private void DurationPieChart(List<int> value, List<String> Name, String Title, String LegendTitle)
+        {
+            //reset your chart series and legends
+            Chart1.Series.Clear();
+            Chart1.Legends.Clear();
 
+            //Add a new Legend(if needed) and do some formating
+            this.Chart1.Titles.Add(Title);
+            Chart1.Legends.Add(LegendTitle);
+            Chart1.Legends[0].LegendStyle = LegendStyle.Table;
+            Chart1.Legends[0].Docking = Docking.Bottom;
+            Chart1.Legends[0].Alignment = StringAlignment.Center;
+            Chart1.Legends[0].Title = Title;
+            Chart1.Legends[0].BorderColor = Color.Black;
+
+            //Add a new chart-series
+            string seriesname = "Duration";
+            Chart1.Series.Add(seriesname);
+            //set the chart-type to "Pie"
+            Chart1.Series[seriesname].ChartType = SeriesChartType.Pie;
+
+            //Add some datapoints so the series. in this case you can pass the values to this method
+            foreach (var nw in value.Zip(Name, Tuple.Create))
+            {
+                Chart1.Series[seriesname].Points.AddXY(nw.Item2, nw.Item1);
+                Chart1.Series[seriesname].IsValueShownAsLabel = true;
+                //   Chart1.Series[seriesname].LabelFormat="#.##%";
+
+
+
+            }
+
+
+        }
         private void DrawPieChart(List<int> value,List<String> Name,String Title, String LegendTitle)
         {
             //reset your chart series and legends
